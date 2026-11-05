@@ -6,7 +6,7 @@ jobs:
   test:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Lint (PSScriptAnalyzer)
         shell: pwsh
         run: |
@@ -20,7 +20,7 @@ jobs:
       - name: Demo report (Windows PowerShell 5.1)
         shell: powershell
         run: .\Invoke-ADAudit.ps1 -Demo -Language fr -OutputPath demo-fr.html
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: demo-report
           path: demo*.html
