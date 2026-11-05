@@ -572,12 +572,14 @@ Write-Host ("Score {0}/100 · {1} finding(s) · report: {2}" -f $score, $finding
 
 if ($Csv) {
     $csvFile = [System.IO.Path]::ChangeExtension($file, '.csv')
+    # Values starting with = + - @ would become formulas in Excel: neutralise them
+    $safe = { param($v) $t = [string]$v; if ($t -match '^[=+\-@\t\r]') { "'" + $t } else { $t } }
     $findings | ForEach-Object {
         $f = $_
         foreach ($it in $f.Items) {
-            [pscustomobject]@{ Severity = $f.Severity; Finding = $f.Title
-                Object = if ($it.PSObject.Properties['Sam']) { $it.Sam } elseif ($it.PSObject.Properties['Name']) { $it.Name } elseif ($it.PSObject.Properties['Host']) { $it.Host } else { $it.Setting }
-                Detail = ($f.Columns | ForEach-Object { '{0}={1}' -f $_, $it.$_ }) -join '; ' }
+            $obj = if ($it.PSObject.Properties['Sam']) { $it.Sam } elseif ($it.PSObject.Properties['Name']) { $it.Name } elseif ($it.PSObject.Properties['Host']) { $it.Host } else { $it.Setting }
+            [pscustomobject]@{ Severity = $f.Severity; Finding = (& $safe $f.Title); Object = (& $safe $obj)
+                Detail = (& $safe (($f.Columns | ForEach-Object { '{0}={1}' -f $_, $it.$_ }) -join '; ')) }
         }
     } | Export-Csv -Path $csvFile -NoTypeInformation -Encoding UTF8
     Write-Host "CSV: $csvFile"
