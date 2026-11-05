@@ -1,0 +1,26 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint (PSScriptAnalyzer)
+        shell: pwsh
+        run: |
+          Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
+          $r = Invoke-ScriptAnalyzer -Path . -Recurse -Severity Error
+          $r | Format-Table -AutoSize
+          if ($r) { exit 1 }
+      - name: Demo report (PowerShell 7)
+        shell: pwsh
+        run: ./Invoke-ADAudit.ps1 -Demo -OutputPath demo.html -Csv
+      - name: Demo report (Windows PowerShell 5.1)
+        shell: powershell
+        run: .\Invoke-ADAudit.ps1 -Demo -Language fr -OutputPath demo-fr.html
+      - uses: actions/upload-artifact@v4
+        with:
+          name: demo-report
+          path: demo*.html

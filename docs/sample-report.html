@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Active Directory audit · corp.example</title>
+<style>
+:root{--bg:#0c0e16;--panel:#141725;--line:#262a3d;--text:#e8e9f3;--muted:#9096b4;--accent:#8a6cff;--accent2:#d16bff;--ok:#35d07f;--warn:#f5b13d;--crit:#ff5c7a;--info:#4cc9f0}
+:root.day{--bg:#f6f6fb;--panel:#fff;--line:#e3e4ef;--text:#171a2b;--muted:#5d6382;--accent:#6d4cf0;--accent2:#b13ad6;--ok:#14a35b;--warn:#c27c00;--crit:#d6264a;--info:#0f8fb8}
+@media (prefers-color-scheme: light){:root:not(.night){--bg:#f6f6fb;--panel:#fff;--line:#e3e4ef;--text:#171a2b;--muted:#5d6382;--accent:#6d4cf0;--accent2:#b13ad6;--ok:#14a35b;--warn:#c27c00;--crit:#d6264a;--info:#0f8fb8}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 "Segoe UI",system-ui,-apple-system,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:28px 24px 60px}
+header{display:flex;align-items:center;gap:16px;margin-bottom:22px}header h1{font-size:24px;margin:0}header .sub{color:var(--muted)}
+.logo{width:44px;height:44px}.spacer{flex:1}
+button.theme{background:var(--panel);color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer}
+.demo{background:linear-gradient(90deg,var(--accent),var(--accent2));color:#fff;padding:8px 14px;border-radius:10px;margin-bottom:18px;font-weight:600}
+.top{display:grid;grid-template-columns:300px 1fr;gap:16px;margin-bottom:22px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+.scorecard{display:flex;align-items:center;gap:18px}.scorecard .big{font-size:40px;font-weight:700}.scorecard .grade{color:var(--muted)}
+.ring circle{fill:none;stroke-width:10}.ring .bg{stroke:var(--line)}.ring .fg{stroke:var(--crit);stroke-linecap:round;transform:rotate(-90deg);transform-origin:60px 60px}
+.ring text{fill:var(--text);font-size:30px;font-weight:700;text-anchor:middle;dominant-baseline:central}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;align-items:center}.stat .v{font-size:28px;font-weight:700}.stat .l{color:var(--muted)}
+.stat .v.crit{color:var(--crit)}.stat .v.warn{color:var(--warn)}
+h2{font-size:17px;margin:28px 0 12px}
+.finding{background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--info);border-radius:12px;margin-bottom:10px}
+.finding.critical{border-left-color:var(--crit)}.finding.warning{border-left-color:var(--warn)}
+.finding summary{display:flex;align-items:center;gap:12px;padding:12px 16px;cursor:pointer;list-style:none}.finding summary::-webkit-details-marker{display:none}
+.ftitle{flex:1;font-weight:600}.count{background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:1px 10px;color:var(--muted);font-variant-numeric:tabular-nums}
+.badge{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 8px;border-radius:6px;color:#fff;background:var(--info)}
+.badge.critical{background:var(--crit)}.badge.warning{background:var(--warn);color:#1b1300}
+.body{padding:0 16px 14px}.fix{margin:0 0 10px;color:var(--muted)}.fix b{color:var(--text)}
+table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line);padding:6px 8px}
+td{border-bottom:1px solid var(--line);padding:6px 8px}td.num{font-variant-numeric:tabular-nums}s{color:var(--muted)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.none{color:var(--ok);font-weight:600}
+footer{margin-top:34px;color:var(--muted);font-size:12px;display:flex;gap:8px;flex-wrap:wrap}footer a{color:var(--accent)}
+@media (max-width:800px){.top,.grid2{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+@media print{button.theme{display:none}details{break-inside:avoid}details:not([open]) .body{display:block}}
+</style></head><body><div class="wrap">
+<header>
+<svg class="logo" viewBox="0 0 128 128"><rect x="4" y="4" width="120" height="120" rx="24" fill="#11131d"/><g fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="8"><path d="M64 26 96 38v24c0 20-14 34-32 40-18-6-32-20-32-40V38z" stroke="#8a6cff"/><path d="m48 64 11 11 21-22" stroke="#d16bff" stroke-width="8.5"/></g></svg>
+<div><h1>Active Directory audit · corp.example</h1><div class="sub">Generated 2026-11-05 12:22 · CORP</div></div>
+<div class="spacer"></div><button class="theme" onclick="toggle()">◐ Theme</button>
+</header>
+<div class='demo'>Demo report: fictitious domain</div>
+<div class="top">
+<div class="card scorecard"><svg class="ring" width="120" height="120"><circle class="bg" cx="60" cy="60" r="52"/><circle class="fg" cx="60" cy="60" r="52" stroke-dasharray="134 400"/><text x="60" y="60">D</text></svg>
+<div><div class="big">41<span style="font-size:18px;color:var(--muted)">/100</span></div><div class="grade">At risk</div></div></div>
+<div class="card stats">
+<div class="stat"><div class="v">97</div><div class="l">Users enabled / 100</div></div>
+<div class="stat"><div class="v">72</div><div class="l">Computers</div></div>
+<div class="stat"><div class="v">7</div><div class="l">Privileged accounts</div></div>
+<div class="stat"><div class="v"><span class="crit" style="color:var(--crit)">3</span> · <span style="color:var(--warn)">10</span> · <span style="color:var(--info)">2</span></div><div class="l">Critical · Warning · Info</div></div>
+</div></div>
+<h2>Findings</h2>
+<details class="finding critical">
+  <summary><span class="badge critical">Critical</span><span class="ftitle">Privileged accounts with a password older than 1 year</span><span class="count">4</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Change these passwords and use separate admin accounts for daily work.</p>
+  <table><thead><tr><th>Account</th><th>Name</th><th>Last logon</th><th>Password set</th></tr></thead><tbody><tr><td>Administrator</td><td>Administrator</td><td>2026-11-03</td><td>2022-04-30</td></tr>
+<tr><td>svc-sql</td><td>SQL Server service</td><td>2026-11-04</td><td>2023-01-05</td></tr>
+<tr><td>svc-backup</td><td>Backup service</td><td>2026-11-04</td><td>2024-05-19</td></tr>
+<tr><td>adm-lucas</td><td>adm-lucas</td><td>2026-11-03</td><td>2025-09-11</td></tr></tbody></table></div>
+</details><details class="finding critical">
+  <summary><span class="badge critical">Critical</span><span class="ftitle">Accounts allowed to have an empty password</span><span class="count">1</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Clear the flag: Set-ADUser &lt;account&gt; -PasswordNotRequired $false</p>
+  <table><thead><tr><th>Account</th><th>Name</th><th>Last logon</th><th>Password set</th></tr></thead><tbody><tr><td>it-support</td><td>it-support</td><td>2026-11-03</td><td>2026-10-06</td></tr></tbody></table></div>
+</details><details class="finding critical">
+  <summary><span class="badge critical">Critical</span><span class="ftitle">Accounts without Kerberos pre-authentication (AS-REP roasting)</span><span class="count">1</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Re-enable pre-authentication: Set-ADAccountControl &lt;account&gt; -DoesNotRequirePreAuth $false</p>
+  <table><thead><tr><th>Account</th><th>Name</th><th>Last logon</th><th>Password set</th></tr></thead><tbody><tr><td>scanner</td><td>Scan to folder</td><td>2026-11-04</td><td>2021-02-04</td></tr></tbody></table></div>
+</details><details class="finding warning">
+  <summary><span class="badge warning">Warning</span><span class="ftitle">Computers on an unsupported Windows version</span><span class="count">22</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Upgrade or isolate them: they no longer receive security updates.</p>
+  <table><thead><tr><th>Name</th><th>Operating system</th><th>Last logon</th></tr></thead><tbody><tr><td>PC-001</td><td>Windows 10 Pro</td><td>2026-10-25</td></tr>
+<tr><td>PC-064</td><td>Windows 10 Pro</td><td>2026-10-19</td></tr>
+<tr><td>PC-062</td><td>Windows 10 Pro</td><td>2026-10-17</td></tr>
+<tr><td>PC-050</td><td>Windows 10 Pro</td><td>2026-10-24</td></tr>
+<tr><td>PC-042</td><td>Windows 10 Pro</td><td>2026-10-12</td></tr>
+<tr><td>PC-040</td><td>Windows 10 Pro</td><td>2026-10-26</td></tr>
+<tr><td>PC-039</td><td>Windows 10 Pro</td><td>2026-11-01</td></tr>
+<tr><td>PC-038</td><td>Windows 10 Pro</td><td>2026-10-13</td></tr>
+<tr><td>PC-033</td><td>Windows 10 Pro</td><td>2026-10-27</td></tr>
+<tr><td>PC-031</td><td>Windows 10 Pro</td><td>2026-10-30</td></tr>
+<tr><td>PC-028</td><td>Windows 10 Pro</td><td>2026-11-02</td></tr>
+<tr><td>PC-026</td><td>Windows 10 Pro</td><td>2026-10-22</td></tr>
+<tr><td>PC-025</td><td>Windows 10 Pro</td><td>2026-11-01</td></tr>
+<tr><td>PC-020</td><td>Windows 10 Pro</td><td>2025-11-17</td></tr>
+<tr><td>PC-009</td><td>Windows 10 Pro</td><td>2026-10-13</td></tr>
+<tr><td>PC-004</td><td>Windows 10 Pro</td><td>2026-10-13</td></tr>
+<tr><td>PC-003</td><td>Windows 10 Pro</td><td>2026-10-30</td></tr>
+<tr><td>PC-002</td><td>Windows 10 Pro</td><td>2026-10-12</td></tr>
+<tr><td>PC-029</td><td>Windows 10 Pro</td><td>2026-10-28</td></tr>
+<tr><td>LAB-W7</td><td>Windows 7 Professional</td><td>2026-11-04</td></tr>
+<tr><td>OLD-ERP</td><td>Windows Server 2008 R2 Standard</td><td>2026-11-04</td></tr>
+<tr><td>APP01</td><td>Windows Server 2012 R2 Standard</td><td>2026-11-04</td></tr></tbody></table></div>
+</details><details class="finding warning">
+  <summary><span class="badge warning">Warning</span><span class="ftitle">Enabled users inactive for 90+ days</span><span class="count">7</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Disable them, move them to an &quot;archive&quot; OU, and delete after a grace period. Check service accounts before.</p>
+  <table><thead><tr><th>Account</th><th>Name</th><th>Last logon</th><th>Password set</th></tr></thead><tbody><tr><td>jmoreau</td><td>Jules Moreau</td><td>2025-01-11</td><td>2026-08-06</td></tr>
+<tr><td>dpetit</td><td>David Petit</td><td>2025-01-21</td><td>2026-09-27</td></tr>
+<tr><td>mlaurent</td><td>Malik Laurent</td><td>2025-03-21</td><td>2026-09-10</td></tr>
+<tr><td>obernard</td><td>Oscar Bernard</td><td>2025-08-06</td><td>2026-08-31</td></tr>
+<tr><td>mleroy</td><td>Malik Leroy</td><td>2025-09-10</td><td>2026-09-25</td></tr>
+<tr><td>tgarnier</td><td>Theo Garnier</td><td>2025-09-23</td><td>2026-09-05</td></tr>
+<tr><td>dmartin</td><td>David Martin</td><td>2026-04-30</td><td>2026-10-03</td></tr></tbody></table></div>
+</details><details class="finding warning">
+  <summary><span class="badge warning">Warning</span><span class="ftitle">Enabled computers inactive for 90+ days</span><span class="count">6</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Machines that no longer exist keep valid credentials. Disable, then delete after a grace period.</p>
+  <table><thead><tr><th>Name</th><th>Operating system</th><th>Last logon</th></tr></thead><tbody><tr><td>PC-034</td><td>Windows 11 Pro</td><td>2025-09-23</td></tr>
+<tr><td>PC-020</td><td>Windows 10 Pro</td><td>2025-11-17</td></tr>
+<tr><td>PC-061</td><td>Windows 11 Enterprise</td><td>2025-12-05</td></tr>
+<tr><td>PC-008</td><td>Windows 11 Enterprise</td><td>2025-12-10</td></tr>
+<tr><td>PC-049</td><td>Windows 11 Enterprise</td><td>2026-06-07</td></tr>
+<tr><td>PC-056</td><td>Windows 11 Pro</td><td>2026-06-13</td></tr></tbody></table></div>
+</details><details class="finding warning">
+  <summary><span class="badge warning">Warning</span><span class="ftitle">Many direct or nested members in Domain Admins</span><span class="count">6</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Keep Domain Admins for a handful of named admin accounts; delegate the rest.</p>
+  <table><thead><tr><th>Account</th><th>Type</th><th>enabled</th></tr></thead><tbody><tr><td>Administrator</td><td>user</td><td>yes</td></tr>
+<tr><td>adm-enzo</td><td>user</td><td>yes</td></tr>
+<tr><td>adm-lucas</td><td>user</td><td>yes</td></tr>
+<tr><td>adm-old</td><td>user</td><td>no</td></tr>
+<tr><td>it-support</td><td>user</td><td>yes</td></tr>
+<tr><td>svc-backup</td><td>user</td><td>yes</td></tr></tbody></table></div>
+</details><details class="finding warning">
+  <summary><span class="badge warning">Warning</span><span class="ftitle">Enabled users whose password never expires</span><span class="count">5</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Remove the flag, or use a gMSA for service accounts so the password rotates automatically.</p>
+  <table><thead><tr><th>Account</th><th>Name</th><th>Last logon</th><th>Password set</th></tr></thead><tbody><tr><td>svc-sql</td><td>SQL Server service</td><td>2026-11-04</td><td>2023-01-05</td></tr>
+<tr><td>svc-backup</td><td>Backup service</td><td>2026-11-04</td><td>2024-05-19</td></tr>
+<tr><td>svc-web</td><td>Intranet app pool</td><td>2026-11-04</td><td>2025-03-15</td></tr>
+<tr><td>scanner</td><td>Scan to folder</td><td>2026-11-04</td><td>2021-02-04</td></tr>
+<tr><td>Administrator</td><td>Administrator</td><td>2026-11-03</td><td>2022-04-30</td></tr></tbody></table></div>
+</details><details class="finding warning">
+  <summary><span class="badge warning">Warning</span><span class="ftitle">User accounts with an SPN (Kerberoasting targets)</span><span class="count">2</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Use long random passwords (25+ characters) or a gMSA; remove SPNs that are no longer used.</p>
+  <table><thead><tr><th>Account</th><th>Name</th><th>Last logon</th><th>Password set</th></tr></thead><tbody><tr><td>svc-sql</td><td>SQL Server service</td><td>2026-11-04</td><td>2023-01-05</td></tr>
+<tr><td>svc-web</td><td>Intranet app pool</td><td>2026-11-04</td><td>2025-03-15</td></tr></tbody></table></div>
+</details><details class="finding warning">
+  <summary><span class="badge warning">Warning</span><span class="ftitle">Disabled accounts still in privileged groups</span><span class="count">1</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Remove them from the groups: re-enabling the account would give back full rights.</p>
+  <table><thead><tr><th>Account</th><th>Name</th><th>Last logon</th><th>Password set</th></tr></thead><tbody><tr><td>adm-old</td><td>adm-old</td><td>2026-11-03</td><td>2023-07-24</td></tr></tbody></table></div>
+</details><details class="finding warning">
+  <summary><span class="badge warning">Warning</span><span class="ftitle">krbtgt password not changed for 180+ days</span><span class="count">1</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Rotate it twice, 10+ hours apart, with Microsoft&#39;s New-KrbtgtKeys script.</p>
+  <table><thead><tr><th>Account</th><th>Password set</th></tr></thead><tbody><tr><td>krbtgt</td><td>2022-11-06</td></tr></tbody></table></div>
+</details><details class="finding warning">
+  <summary><span class="badge warning">Warning</span><span class="ftitle">Minimum password length below 12</span><span class="count">1</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Raise it to 12-14 in the Default Domain Policy, or use a fine-grained policy.</p>
+  <table><thead><tr><th>Setting</th><th>Value</th></tr></thead><tbody><tr><td>Minimum length</td><td>8</td></tr></tbody></table></div>
+</details><details class="finding warning">
+  <summary><span class="badge warning">Warning</span><span class="ftitle">No account lockout</span><span class="count">1</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Set a lockout threshold (for example 10 attempts) to slow down password guessing.</p>
+  <table><thead><tr><th>Setting</th><th>Value</th></tr></thead><tbody><tr><td>Lockout threshold</td><td>0 (never locks)</td></tr></tbody></table></div>
+</details><details class="finding info">
+  <summary><span class="badge info">Info</span><span class="ftitle">Passwords expiring in the next 14 days</span><span class="count">5</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Remind the users; nothing is wrong, this is to avoid help-desk calls.</p>
+  <table><thead><tr><th>Account</th><th>Name</th><th>Expire</th></tr></thead><tbody><tr><td>isimon</td><td>Ines Simon</td><td>2026-11-10</td></tr>
+<tr><td>cbernard</td><td>Chloe Bernard</td><td>2026-11-11</td></tr>
+<tr><td>kleroy</td><td>Karim Leroy</td><td>2026-11-12</td></tr>
+<tr><td>imartin</td><td>Ines Martin</td><td>2026-11-13</td></tr>
+<tr><td>jlaurent</td><td>Jules Laurent</td><td>2026-11-16</td></tr></tbody></table></div>
+</details><details class="finding info">
+  <summary><span class="badge info">Info</span><span class="ftitle">Enabled users that never logged on (created 90+ days ago)</span><span class="count">2</span></summary>
+  <div class="body"><p class="fix"><b>How to fix:</b> Usually forgotten or test accounts. Disable or delete them.</p>
+  <table><thead><tr><th>Account</th><th>Name</th><th>Last logon</th><th>Password set</th></tr></thead><tbody><tr><td>pbernard</td><td>Paul Bernard</td><td>never</td><td>2026-09-26</td></tr>
+<tr><td>opetit</td><td>Oscar Petit</td><td>never</td><td>2026-06-06</td></tr></tbody></table></div>
+</details>
+<div class="grid2">
+<div><h2>Password policy</h2><div class="card"><table><thead><tr><th>Setting</th><th>Value</th></tr></thead><tbody><tr><td>Minimum length</td><td>8</td></tr><tr><td>Complexity</td><td>yes</td></tr><tr><td>Maximum age (days)</td><td>180</td></tr><tr><td>History</td><td>12</td></tr><tr><td>Lockout threshold</td><td>0 (never locks)</td></tr><tr><td>Domain functional level</td><td>Windows2016Domain</td></tr><tr><td>Forest functional level</td><td>Windows2016Forest</td></tr></tbody></table></div></div>
+<div><h2>Domain controllers</h2><div class="card"><table><thead><tr><th>Host</th><th>Operating system</th><th>Site</th><th>Global catalog</th></tr></thead><tbody><tr><td>dc01.corp.example</td><td>Windows Server 2022 Standard</td><td>HQ</td><td>yes</td></tr><tr><td>dc02.corp.example</td><td>Windows Server 2016 Standard</td><td>Branch</td><td>yes</td></tr></tbody></table></div></div>
+</div>
+<h2>Privileged groups</h2><div class="card"><table><thead><tr><th>Group</th><th>#</th><th>Members</th></tr></thead><tbody><tr><td>Domain Admins</td><td class='num'>6</td><td>Administrator, adm-enzo, adm-lucas, <s>adm-old</s>, it-support, svc-backup</td></tr><tr><td>Enterprise Admins</td><td class='num'>1</td><td>Administrator</td></tr><tr><td>Schema Admins</td><td class='num'>1</td><td>Administrator</td></tr><tr><td>Administrators</td><td class='num'>7</td><td>Administrator, adm-enzo, adm-lucas, <s>adm-old</s>, it-support, svc-backup, svc-sql</td></tr><tr><td>Account Operators</td><td class='num'>0</td><td></td></tr><tr><td>Backup Operators</td><td class='num'>1</td><td>svc-backup</td></tr><tr><td>Server Operators</td><td class='num'>0</td><td></td></tr><tr><td>Print Operators</td><td class='num'>0</td><td></td></tr><tr><td>Group Policy Creator Owners</td><td class='num'>1</td><td>Administrator</td></tr><tr><td>DnsAdmins</td><td class='num'>1</td><td>adm-lucas</td></tr></tbody></table></div>
+<footer><span>Read-only audit: nothing was changed in Active Directory.</span><span>·</span><span>ad-audit-report 1.0.0 by <a href="https://github.com/B2ZO0/ad-audit-report">B2ZO0</a></span></footer>
+</div>
+<script>
+function toggle(){var r=document.documentElement;var day=r.classList.contains('day')||(!r.classList.contains('night')&&matchMedia('(prefers-color-scheme: light)').matches);r.classList.remove('day','night');r.classList.add(day?'night':'day');}
+</script>
+</body></html>
